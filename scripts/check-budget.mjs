@@ -46,8 +46,8 @@ if (tracked > LIMITS.repoTrackedMB * MB) { console.error(`FAIL: repo size exceed
 if (build > LIMITS.buildMB * MB) { console.error(`FAIL: build size exceeds ${LIMITS.buildMB} MB`); fail = true; }
 if (assets > LIMITS.initialMB * MB) { console.error(`FAIL: initial download exceeds ${LIMITS.initialMB} MB`); fail = true; }
 if (fs.existsSync('node_modules') && tracked > 0) {
-  const nm = execSync('git check-ignore node_modules && echo yes || echo no').toString().trim();
-  if (nm !== 'yes') { console.error('FAIL: node_modules is not gitignored'); fail = true; }
+  const nm = execSync('git check-ignore -q node_modules; echo $?').toString().trim();
+  if (nm !== '0') { console.error('FAIL: node_modules is not gitignored'); fail = true; }
 }
 if (fail) process.exit(1);
 console.log('OK: all size budgets met.');
