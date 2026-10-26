@@ -28,7 +28,7 @@ function tex(canvas, repeat = 1) {
   return t;
 }
 
-function stone(base = '#4a453e', joint = '#2a2724', blocks = 4, size = 256) {
+function stone(base = '#7a7468', joint = '#45403a', blocks = 4, size = 256) {
   const c = makeCanvas(size);
   const ctx = c.getContext('2d');
   ctx.fillStyle = base;
@@ -40,7 +40,7 @@ function stone(base = '#4a453e', joint = '#2a2724', blocks = 4, size = 256) {
       const bw = size / blocks;
       const x = i * bw + off;
       const y = row * bh;
-      ctx.fillStyle = `rgba(${40 + Math.random() * 30},${38 + Math.random() * 26},${34 + Math.random() * 22},0.55)`;
+      ctx.fillStyle = `rgba(${72 + Math.random() * 36},${68 + Math.random() * 32},${60 + Math.random() * 28},0.55)`;
       ctx.fillRect(x + 2, y + 2, bw - 4, bh - 4);
     }
   }
@@ -57,14 +57,14 @@ function stone(base = '#4a453e', joint = '#2a2724', blocks = 4, size = 256) {
   return tex(c);
 }
 
-function flagstone(base = '#3b3833', size = 256) {
+function flagstone(base = '#6a665c', size = 256) {
   const c = makeCanvas(size);
   const ctx = c.getContext('2d');
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, size, size);
   const n = 4;
   for (let x = 0; x < n; x++) for (let y = 0; y < n; y++) {
-    ctx.fillStyle = `rgba(${44 + Math.random() * 26},${42 + Math.random() * 22},${38 + Math.random() * 20},0.7)`;
+    ctx.fillStyle = `rgba(${78 + Math.random() * 34},${74 + Math.random() * 30},${66 + Math.random() * 26},0.7)`;
     ctx.fillRect(x * (size / n) + 3, y * (size / n) + 3, size / n - 6, size / n - 6);
   }
   // cracks
@@ -83,7 +83,7 @@ function flagstone(base = '#3b3833', size = 256) {
 function wood(size = 128) {
   const c = makeCanvas(size);
   const ctx = c.getContext('2d');
-  ctx.fillStyle = '#3a2a1c';
+  ctx.fillStyle = '#6a4e34';
   ctx.fillRect(0, 0, size, size);
   for (let i = 0; i < 20; i++) {
     ctx.strokeStyle = `rgba(${20 + Math.random() * 30},${14 + Math.random() * 20},${8 + Math.random() * 14},0.5)`;
@@ -125,7 +125,7 @@ function sigil(color = '#5dff9a', size = 128) {
 export function createTextures() {
   return {
     wall: stone(),
-    wallDark: stone('#38342e', '#201d1a', 5),
+    wallDark: stone('#565149', '#332f2a', 5),
     floor: flagstone(),
     wood: wood(),
     sigil: sigil(),

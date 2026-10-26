@@ -91,6 +91,9 @@ export class Game {
       damageEnemy: (e, d, from) => this.damageEnemy(e, d, from),
     };
     this.weapons.onShake = (a) => { this.shake = Math.max(this.shake || 0, a); };
+    // faint lantern glow around the player keeps the world readable in the dark
+    this.lantern = new THREE.PointLight(0xffd9a0, 0.55, 9, 1.6);
+    this.camera.add(this.lantern);
     this.particles = new Particles(this.scene);
     this.weapons.ctx.particles = this.particles;
     this.enemies = ENEMY_SPAWNS.map(([t, x, z]) => createEnemy(this, t, x, z));

@@ -22,19 +22,19 @@ export class Engine {
     this.renderer = renderer;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.6;
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x07060a);
-    this.scene.fog = new THREE.FogExp2(0x07060a, 0.042);
+    this.scene.fog = new THREE.FogExp2(0x0a0810, 0.03);
 
     this.camera = new THREE.PerspectiveCamera(72, 1, 0.1, 90);
     this.scene.add(this.camera);
 
     // base lighting (dark, moody) — tracked so teardown can preserve them
-    const hemi = new THREE.HemisphereLight(0x3d4256, 0x14110d, 0.8);
+    const hemi = new THREE.HemisphereLight(0x4a4f63, 0x1a1610, 2.6);
     this.scene.add(hemi);
-    const amb = new THREE.AmbientLight(0x26262f, 0.9);
+    const amb = new THREE.AmbientLight(0x2c2c38, 2.4);
     this.scene.add(amb);
     this.baseLights = [hemi, amb];
 
