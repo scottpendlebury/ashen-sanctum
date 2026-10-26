@@ -1,0 +1,125 @@
+/* The Ashen Sanctum — dark, restrained UI. */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #07060a; }
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #c8bfae;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+#game-canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+
+/* ---------- HUD ---------- */
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+#hud.hidden { visibility: hidden; }
+#objective-wrap {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(7, 6, 10, 0.55); padding: 4px 14px; border: 1px solid rgba(120,100,70,0.35);
+  font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #a89a80;
+}
+#sigils-wrap { position: absolute; top: 44px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #5dff9a; opacity: 0.8; letter-spacing: 0.1em; }
+#health-wrap {
+  position: absolute; bottom: 18px; left: 18px; display: flex; align-items: center; gap: 10px;
+}
+#health-bar { width: 190px; height: 10px; background: rgba(30,20,20,0.8); border: 1px solid rgba(140,60,50,0.5); }
+#health-fill { height: 100%; width: 100%; background: #8e2a20; transition: width 0.2s; }
+#health-fill.low { animation: pulse 0.7s infinite alternate; }
+@keyframes pulse { from { opacity: 1; } to { opacity: 0.45; } }
+#health-text { font-size: 15px; color: #c8bfae; min-width: 30px; }
+#weapon-wrap { position: absolute; bottom: 18px; right: 18px; text-align: right; }
+#weapon-slots { display: flex; gap: 5px; justify-content: flex-end; margin-bottom: 4px; }
+.slot { font-size: 11px; padding: 2px 8px; border: 1px solid rgba(120,100,70,0.4); color: #6a6154; }
+.slot.active { color: #e8d9b0; border-color: #b8a06a; background: rgba(120,100,60,0.2); }
+#weapon-name { display: block; font-size: 13px; letter-spacing: 0.08em; color: #a89a80; }
+#ammo { font-size: 20px; color: #e8d9b0; }
+#ammo-label { font-size: 10px; color: #6a6154; letter-spacing: 0.15em; }
+#prompt {
+  position: absolute; bottom: 30%; left: 50%; transform: translateX(-50%);
+  background: rgba(7,6,10,0.7); border: 1px solid rgba(93,255,154,0.4);
+  padding: 6px 16px; font-size: 14px; color: #d5e8d0; letter-spacing: 0.05em;
+}
+#damage-vignette, #heal-vignette {
+  position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.35s; z-index: 6;
+}
+#damage-vignette { box-shadow: inset 0 0 140px 60px rgba(120,10,10,0.85); }
+#heal-vignette { box-shadow: inset 0 0 140px 60px rgba(40,140,70,0.7); }
+#toast {
+  position: fixed; top: 24%; left: 50%; transform: translateX(-50%);
+  max-width: 70%; text-align: center; font-size: 16px; color: #d8ccae;
+  text-shadow: 0 0 8px #000; opacity: 0; transition: opacity 0.6s; pointer-events: none; z-index: 7;
+  font-style: italic;
+}
+
+/* ---------- Screens ---------- */
+.screen {
+  position: fixed; inset: 0; z-index: 10; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(14,10,12,0.82), rgba(5,4,6,0.97));
+  text-align: center; padding: 20px; overflow-y: auto;
+}
+.screen.visible { display: flex; }
+.screen h1 { font-size: clamp(34px, 7vw, 64px); letter-spacing: 0.18em; color: #b8512f; text-shadow: 0 0 24px rgba(184,81,47,0.35); font-weight: normal; }
+.screen h2 { font-size: clamp(24px, 5vw, 36px); letter-spacing: 0.15em; color: #a89a80; font-weight: normal; margin-bottom: 12px; }
+.death-title { color: #7a1616; text-shadow: 0 0 24px rgba(120,10,10,0.5); }
+.victory-title { color: #5d8f6a; text-shadow: 0 0 24px rgba(60,140,80,0.4); }
+.subtitle { margin: 12px 0 22px; color: #8a7f6c; font-style: italic; font-size: clamp(13px, 2.5vw, 16px); }
+.big-stat { font-size: 30px; color: #e8d9b0; margin: 6px 0; }
+.footnote { margin-top: 16px; color: #6a6154; font-size: 13px; }
+.menu { display: flex; flex-direction: column; gap: 10px; width: min(320px, 80vw); }
+.mbtn {
+  font-family: inherit; font-size: 16px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 11px 20px; background: rgba(20,16,14,0.85); color: #c8bfae;
+  border: 1px solid rgba(120,100,70,0.45); cursor: pointer; transition: border-color 0.2s, color 0.2s;
+}
+.mbtn:hover, .mbtn:focus-visible { border-color: #b8512f; color: #e8d9b0; outline: none; }
+.mbtn.primary { border-color: #b8512f; color: #e8d9b0; }
+.settings-col { display: flex; flex-direction: column; gap: 12px; width: min(420px, 88vw); }
+.settings-col label { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #a89a80; }
+.settings-col input[type="range"] { flex: 1; accent-color: #b8512f; }
+.settings-col select { background: #14100e; color: #c8bfae; border: 1px solid rgba(120,100,70,0.45); padding: 5px; font-family: inherit; }
+.out { font-size: 12px; color: #6a6154; min-width: 38px; text-align: right; }
+.check { justify-content: flex-start; }
+.help-cols { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; margin-bottom: 18px; }
+.help-cols h3 { color: #b8512f; letter-spacing: 0.1em; margin-bottom: 8px; font-weight: normal; }
+.help-cols ul { list-style: none; font-size: 14px; color: #a89a80; line-height: 1.7; text-align: left; }
+
+#webgl-error {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+  background: #07060a; color: #b8512f; font-size: 18px; padding: 30px; text-align: center;
+}
+
+/* ---------- Touch controls ---------- */
+#touch-controls { position: fixed; inset: 0; z-index: 8; pointer-events: none; }
+#tc-joy {
+  position: absolute; bottom: 90px; left: 46px; width: 108px; height: 108px; border-radius: 50%;
+  border: 2px solid rgba(200,190,170,0.35); background: rgba(20,16,14,0.35); opacity: 0.35;
+  transition: opacity 0.2s;
+}
+#tc-joy-knob {
+  position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+  border-radius: 50%; background: rgba(200,190,170,0.45); pointer-events: none;
+}
+#tc-buttons {
+  position: absolute; right: 14px; bottom: 76px; display: grid; gap: 10px;
+  grid-template-columns: repeat(2, auto); justify-items: end;
+}
+.tc-btn {
+  pointer-events: auto; font-family: inherit; font-size: 13px; letter-spacing: 0.08em;
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(20,16,14,0.55); color: #c8bfae; border: 1px solid rgba(120,100,70,0.5);
+  opacity: 0.85;
+}
+.tc-btn.pressed { background: rgba(184,81,47,0.5); border-color: #b8512f; }
+.tc-big { width: 84px; height: 84px; font-size: 16px; border-color: rgba(184,81,47,0.7); }
+.tc-corner {
+  position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 12px;
+  width: 48px; height: 48px; border-radius: 8px;
+}
+
+@media (max-width: 640px) {
+  #health-bar { width: 130px; }
+  #weapon-name { display: none; }
+  #objective-wrap { font-size: 11px; width: max-content; max-width: 78vw; }
+  .help-cols { gap: 12px; }
+}

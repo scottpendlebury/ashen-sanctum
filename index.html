@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#07060a" />
+  <title>The Ashen Sanctum</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2307060a'/%3E%3Cpath d='M16 4 L24 26 L16 21 L8 26 Z' fill='%23b8512f'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="objective-wrap"><span id="objective">Descend into the Sanctum</span></div>
+    <div id="sigils-wrap"><span id="sigils">Sigils 0/2</span></div>
+    <div id="health-wrap">
+      <div id="health-bar"><div id="health-fill"></div></div>
+      <span id="health-text">100</span>
+    </div>
+    <div id="weapon-wrap">
+      <div id="weapon-slots">
+        <span id="slot-1" class="slot active">1</span>
+        <span id="slot-2" class="slot">2</span>
+        <span id="slot-3" class="slot">3</span>
+      </div>
+      <span id="weapon-name">Riven Crossbow</span>
+      <span id="ammo"><span id="ammo-label">BOLTS</span> <span id="ammo-text">12</span></span>
+    </div>
+    <div id="prompt" style="display:none"></div>
+  </div>
+
+  <div id="damage-vignette"></div>
+  <div id="heal-vignette"></div>
+  <div id="toast"></div>
+
+  <!-- Touch controls -->
+  <div id="touch-controls" style="display:none">
+    <div id="tc-joy"><div id="tc-joy-knob"></div></div>
+    <div id="tc-buttons">
+      <button id="tc-fire" class="tc-btn tc-big">ATK</button>
+      <button id="tc-alt" class="tc-btn">ALT</button>
+      <button id="tc-jump" class="tc-btn">JMP</button>
+      <button id="tc-reload" class="tc-btn">RLD</button>
+      <button id="tc-wnext" class="tc-btn">SWP</button>
+      <button id="tc-interact" class="tc-btn">USE</button>
+      <button id="tc-sprint" class="tc-btn">RUN</button>
+    </div>
+    <button id="tc-pause" class="tc-btn tc-corner">II</button>
+  </div>
+
+  <!-- Screens -->
+  <div id="screen-title" class="screen visible">
+    <h1>THE ASHEN<br/>SANCTUM</h1>
+    <p class="subtitle">A penitent knight descends. The fire below does not forgive.</p>
+    <div class="menu">
+      <button id="btn-start" class="mbtn primary">Descend</button>
+      <button id="btn-title-settings" class="mbtn">Settings</button>
+      <button id="btn-help" class="mbtn">Controls</button>
+    </div>
+    <p class="footnote" id="best-note"></p>
+  </div>
+
+  <div id="screen-pause" class="screen">
+    <h2>Paused</h2>
+    <div class="menu">
+      <button id="btn-resume" class="mbtn primary">Resume</button>
+      <button id="btn-restart" class="mbtn">Restart</button>
+      <button id="btn-pause-settings" class="mbtn">Settings</button>
+      <button id="btn-pause-help" class="mbtn">Controls</button>
+      <button id="btn-quit" class="mbtn">Abandon</button>
+    </div>
+  </div>
+
+  <div id="screen-settings" class="screen">
+    <h2>Settings</h2>
+    <div class="settings-col">
+      <label>Mouse sensitivity <input type="range" id="set-mouse" min="1" max="20" step="1" /><span class="out" id="set-mouse-out"></span></label>
+      <label>Touch sensitivity <input type="range" id="set-touch" min="1" max="20" step="1" /><span class="out" id="set-touch-out"></span></label>
+      <label class="check"><input type="checkbox" id="set-invert" /> Invert look (vertical)</label>
+      <label>Master volume <input type="range" id="set-master" min="0" max="20" step="1" /><span class="out" id="set-master-out"></span></label>
+      <label>Music volume <input type="range" id="set-music" min="0" max="20" step="1" /><span class="out" id="set-music-out"></span></label>
+      <label>Effects volume <input type="range" id="set-sfx" min="0" max="20" step="1" /><span class="out" id="set-sfx-out"></span></label>
+      <label class="check"><input type="checkbox" id="set-mute" /> Mute all</label>
+      <label>Graphics quality
+        <select id="set-quality">
+          <option value="low">Performance</option>
+          <option value="auto">Balanced (adaptive)</option>
+          <option value="high">High</option>
+        </select>
+      </label>
+      <button id="btn-settings-back" class="mbtn">Back</button>
+    </div>
+  </div>
+
+  <div id="screen-help" class="screen">
+    <h2>Controls</h2>
+    <div class="help-cols">
+      <div>
+        <h3>Desktop</h3>
+        <ul>
+          <li>WASD — move</li>
+          <li>Mouse — look</li>
+          <li>LMB — fire · RMB — strike</li>
+          <li>Shift — sprint · Space — jump</li>
+          <li>Ctrl / C — crouch</li>
+          <li>R — reload · E — interact</li>
+          <li>1 / 2 / 3 or wheel — weapons</li>
+          <li>Esc — pause</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Touch</h3>
+        <ul>
+          <li>Left half — drag to move</li>
+          <li>Right half — drag to look</li>
+          <li>ATK / ALT — attacks</li>
+          <li>JMP · RLD · SWP · USE · RUN</li>
+          <li>II — pause</li>
+        </ul>
+      </div>
+    </div>
+    <button id="btn-help-back" class="mbtn">Back</button>
+  </div>
+
+  <div id="screen-death" class="screen">
+    <h1 class="death-title">YOU ARE<br/>FORSAKEN</h1>
+    <p class="subtitle">The Sanctum keeps what it kills.</p>
+    <div class="menu">
+      <button id="btn-death-restart" class="mbtn primary">Rise Again</button>
+      <button id="btn-death-title" class="mbtn">Abandon</button>
+    </div>
+  </div>
+
+  <div id="screen-victory" class="screen">
+    <h1 class="victory-title">THE SANCTUM<br/>IS QUIET</h1>
+    <p class="subtitle">The Hollow Sentinel is broken. The fire gutters out.</p>
+    <p id="victory-time" class="big-stat"></p>
+    <p id="victory-best" class="footnote"></p>
+    <div class="menu">
+      <button id="btn-victory-again" class="mbtn primary">Descend Again</button>
+      <button id="btn-victory-title" class="mbtn">Main Menu</button>
+    </div>
+  </div>
+
+  <div id="webgl-error" style="display:none"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
